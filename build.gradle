@@ -1,0 +1,37 @@
+plugins {
+    id 'application'
+}
+
+def SUPPORTED_ARCHES_LWJGL = ['natives-windows', 'natives-linux']
+
+sourceCompatibility = JavaVersion.VERSION_11
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation group: 'com.github.tomtzook', name: 'jmath', version: '1.2.0'
+
+    implementation group: 'org.lwjgl', name: 'lwjgl', version: LWJGL_VERSION
+    implementation group: 'org.lwjgl', name: 'lwjgl-glfw', version: LWJGL_VERSION
+    implementation group: 'org.lwjgl', name: 'lwjgl-opengl', version: LWJGL_VERSION
+    implementation group: 'org.lwjgl', name: 'lwjgl-stb', version: LWJGL_VERSION
+
+    SUPPORTED_ARCHES_LWJGL.each {
+        implementation group: 'org.lwjgl', name: 'lwjgl', version: LWJGL_VERSION, classifier: it
+        implementation group: 'org.lwjgl', name: 'lwjgl-opengl', version: LWJGL_VERSION, classifier: it
+        implementation group: 'org.lwjgl', name: 'lwjgl-glfw', version: LWJGL_VERSION, classifier: it
+        implementation group: 'org.lwjgl', name: 'lwjgl-stb', version: LWJGL_VERSION, classifier: it
+    }
+}
+
+jar {
+
+}
+
+application {
+    mainClassName = 'com.flash3388.visualizer.Main'
+    applicationName = 'Flash FRC Visualizer'
+}
