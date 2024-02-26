@@ -1,4 +1,4 @@
-package com.flash3388.visualizer.util;
+package com.github.tomtzook.util;
 
 public class Timer {
 

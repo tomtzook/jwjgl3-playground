@@ -1,4 +1,4 @@
-package com.flash3388.visualizer.kinematics;
+package com.github.tomtzook.kinematics;
 
 import com.jmath.vectors.Vector3;
 

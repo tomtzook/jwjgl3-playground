@@ -1,8 +1,8 @@
-package com.flash3388.visualizer;
+package com.github.tomtzook;
 
-import com.flash3388.visualizer.engine.BaseEntity;
-import com.flash3388.visualizer.engine.EngineController;
-import com.flash3388.visualizer.kinematics.Axes;
+import com.github.tomtzook.engine.BaseEntity;
+import com.github.tomtzook.engine.EngineController;
+import com.github.tomtzook.kinematics.Axes;
 
 public class TestEntity extends BaseEntity {
 

@@ -1,6 +1,6 @@
-package com.flash3388.visualizer.engine;
+package com.github.tomtzook.engine;
 
-import com.flash3388.visualizer.kinematics.Kinematics3;
+import com.github.tomtzook.kinematics.Kinematics3;
 
 public abstract class BaseEntity implements Entity {
 

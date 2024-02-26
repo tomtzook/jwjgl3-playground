@@ -1,6 +1,6 @@
-package com.flash3388.visualizer.engine;
+package com.github.tomtzook.engine;
 
-import com.flash3388.visualizer.util.Timer;
+import com.github.tomtzook.util.Timer;
 
 public class Engine {
 

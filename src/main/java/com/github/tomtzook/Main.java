@@ -1,8 +1,8 @@
-package com.flash3388.visualizer;
+package com.github.tomtzook;
 
-import com.flash3388.visualizer.engine.Engine;
-import com.flash3388.visualizer.engine.Input;
-import com.flash3388.visualizer.engine.Window;
+import com.github.tomtzook.engine.Engine;
+import com.github.tomtzook.engine.Input;
+import com.github.tomtzook.engine.Window;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 

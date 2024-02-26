@@ -1,4 +1,4 @@
-package com.flash3388.visualizer.engine;
+package com.github.tomtzook.engine;
 
 import com.jmath.vectors.Vector2;
 

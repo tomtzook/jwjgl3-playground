@@ -32,6 +32,6 @@ jar {
 }
 
 application {
-    mainClassName = 'com.flash3388.visualizer.Main'
-    applicationName = 'Flash FRC Visualizer'
+    mainClassName = 'com.github.tomtzook.Main'
+    applicationName = ''
 }
