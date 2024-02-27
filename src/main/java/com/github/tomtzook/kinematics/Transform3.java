@@ -58,16 +58,8 @@ public class Transform3 {
 
     public void rotate(Vector3 axis, double angle) {
         mRotation = Quaternion.rotationOnAxis(axis, angle)
-                .multiply(mRotation);
-
-        double length = mRotation.magnitude();
-        if (length != 0) {
-            mRotation = new Quaternion(
-                    mRotation.x() / length,
-                    mRotation.y() / length,
-                    mRotation.z() / length,
-                    mRotation.w() / length);
-        }
+                .multiply(mRotation)
+                .normalized();
     }
 
     public void rotateAroundX(double angle) {
@@ -90,7 +82,7 @@ public class Transform3 {
 
     public Matrix getTransformation(){
         Matrix translationMatrix = Matrices.translation3d(mPosition.x(), mPosition.y(), mPosition.z());
-        Matrix rotationMatrix = AdditionalMath.toRotationMatrix(mRotation);
+        Matrix rotationMatrix = AdditionalMath.toRotationMatrix(mRotation.conjugate());
         Matrix scaleMatrix = Matrices.scaling3d(1, 1, 1);
 
         return translationMatrix.multiply(rotationMatrix).multiply(scaleMatrix);

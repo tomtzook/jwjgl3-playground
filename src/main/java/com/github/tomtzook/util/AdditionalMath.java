@@ -14,41 +14,29 @@ public class AdditionalMath {
     }
 
     public static Matrix toRotationMatrix(Quaternion quaternion) {
-        Vector3 forward = new Vector3(
-                2.0 * (quaternion.x() * quaternion.z() - quaternion.w() * quaternion.z()),
-                2.0 * (quaternion.y() * quaternion.z() + quaternion.w() * quaternion.x()),
-                1.0 - 2.0 * (quaternion.x() * quaternion.x() + quaternion.y() * quaternion.y()));
-        Vector3 up = new Vector3(
-                2.0 * (quaternion.x() * quaternion.y() + quaternion.w() * quaternion.z()),
-                1.0 - 2.0 * (quaternion.x() * quaternion.x() + quaternion.z() * quaternion.z()),
-                2.0 * (quaternion.y() * quaternion.z() - quaternion.w() * quaternion.x()));
-        Vector3 right = new Vector3(
-                1.0 - 2.0 * (quaternion.y() * quaternion.y() + quaternion.z() * quaternion.z()),
-                2.0 * (quaternion.x() * quaternion.y() - quaternion.w() * quaternion.z()),
-                2.0 * (quaternion.x() * quaternion.z() + quaternion.w() * quaternion.y()));
-        return rotation3dMatrix(forward, up, right);
-    }
+        double q0 = quaternion.x();
+        double q1 = quaternion.y();
+        double q2 = quaternion.z();
+        double q3 = quaternion.w();
 
-    public static Matrix rotation3dMatrix(Vector3 f, Vector3 u, Vector3 r) {
-        double[][] m = new double[4][4];
-        m[0][0] = r.x();
-        m[0][1] = r.y();
-        m[0][2] = r.z();
-        m[0][3] = 0;
-        m[1][0] = u.x();
-        m[1][1] = u.y();
-        m[1][2] = u.z();
-        m[1][3] = 0;
-        m[2][0] = f.x();
-        m[2][1] = f.y();
-        m[2][2] = f.z();
-        m[2][3] = 0;
-        m[3][0] = 0;
-        m[3][1] = 0;
-        m[3][2] = 0;
-        m[3][3] = 1;
+        double r00 = 2 * (q0 * q0 + q1 * q1) - 1;
+        double r01 = 2 * (q1 * q2 - q0 * q3);
+        double r02 = 2 * (q1 * q3 + q0 * q2);
 
-        return Matrix.from(m);
+        double r10 = 2 * (q1 * q2 + q0 * q3);
+        double r11 = 2 * (q0 * q0 + q2 * q2) - 1;
+        double r12 = 2 * (q2 * q3 - q0 * q1);
+
+        double r20 = 2 * (q1 * q3 - q0 * q2);
+        double r21 = 2 * (q2 * q3 + q0 * q1);
+        double r22 = 2 * (q0 * q0 + q3 * q3) - 1;
+
+        return Matrix.from(new double[][] {
+                {r00, r01, r02, 0},
+                {r10, r11, r12, 0},
+                {r20, r21, r22, 0},
+                {0, 0, 0, 1}
+        });
     }
 
     public static Matrix perspectiveMatrix3d(double fov, double aspectRatio, double zNear, double zFar) {

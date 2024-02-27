@@ -32,31 +32,20 @@ public class Camera extends BaseEntity {
     }
 
     public Matrix getView() {
-        Quaternion rotation = getTransform().getRotation().conjugate();
         Vector3 position = getTransform().getPosition().multiply(-1);
+        Quaternion rotation = getTransform().getRotation();
 
         // TODO: USE QUATERNION MATH
         Matrix translationMat = Matrices.translation3d(position.x(), position.y(), position.z());
-        Matrix rotationMat = Matrices.rotation3d();
+        Matrix rotationMat = AdditionalMath.toRotationMatrix(rotation);
 
         return rotationMat.multiply(translationMat);
     }
-
-    boolean c = false;
 
     @Override
     public void update(EngineController controller, double deltaTime) {
         Input input = controller.getInput();
         double moveAmount = mMovementSpeed * deltaTime;
-
-        if (input.isKeyDown(GLFW_KEY_0)) {
-            if (!c) {
-                c = true;
-                getTransform().rotateAroundY(5);
-            }
-        } else {
-            c = false;
-        }
 
         if (input.isKeyDown(GLFW_KEY_UP)) {
             getTransform().moveForward(moveAmount);
@@ -81,13 +70,13 @@ public class Camera extends BaseEntity {
             Vector2 windowCenterPosition = controller.getWindow().getCenter();
             Vector2 deltaPos = input.getMousePosition();
 
-            /*if (deltaPos.y() != 0) {
-                getTransform().rotateAroundY(deltaPos.y() * mLookSensitivity);
+            if (deltaPos.x() != 0) {
+                getTransform().rotateAroundY(deltaPos.x() * mLookSensitivity);
             }
 
-            if (deltaPos.x() != 0) {
-                getTransform().rotate(getTransform().getRotation().right(), -deltaPos.x() * mLookSensitivity);
-            }*/
+            if (deltaPos.y() != 0) {
+                getTransform().rotateAroundX(deltaPos.y() * mLookSensitivity);
+            }
 
             input.setMousePosition(windowCenterPosition);
         }

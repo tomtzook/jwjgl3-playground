@@ -9,6 +9,8 @@ import com.jmath.vectors.Vector2;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.glEnable;
 
 public class Engine {
 
@@ -26,6 +28,7 @@ public class Engine {
 
         mWindow.show();
         GL.createCapabilities();
+        glEnable(GL_DEPTH_TEST);
 
         mWorld = new World();
         mController = new EngineControllerImpl(window, input);
@@ -41,7 +44,7 @@ public class Engine {
         Camera camera = new Camera(
                 projection,
                 0.5,
-                10.0
+                0.5
         );
         Shader shader = new Shader("shader");
         mRenderer = new Renderer(camera, shader);
