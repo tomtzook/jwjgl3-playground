@@ -4,7 +4,7 @@ import com.jmath.vectors.Vector2;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Window {
+public class Window implements AutoCloseable {
 
     final long mWindow;
 
@@ -28,6 +28,7 @@ public class Window {
 
     public void show() {
         glfwShowWindow(mWindow);
+        glfwMakeContextCurrent(mWindow);
     }
 
     public boolean shouldClose() {
@@ -46,5 +47,10 @@ public class Window {
     public Vector2 getSize() {
         glfwGetWindowSize(mWindow, mWindowGetWidth, mWindowGetHeight);
         return new Vector2(mWindowGetWidth[0], mWindowGetHeight[0]);
+    }
+
+    @Override
+    public void close() throws Exception {
+        glfwDestroyWindow(mWindow);
     }
 }

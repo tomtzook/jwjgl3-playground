@@ -1,5 +1,8 @@
 package com.github.tomtzook.kinematics;
 
+import com.github.tomtzook.util.AdditionalMath;
+import com.jmath.matrices.Matrices;
+import com.jmath.matrices.Matrix;
 import com.jmath.quaternion.Quaternion;
 import com.jmath.vectors.Vector3;
 
@@ -10,7 +13,7 @@ public class Transform3 {
 
     public Transform3() {
         mPosition = new Vector3();
-        mRotation = new Quaternion();
+        mRotation = new Quaternion(0, 0, 0, 1);
     }
 
     public Vector3 getPosition() {
@@ -55,8 +58,16 @@ public class Transform3 {
 
     public void rotate(Vector3 axis, double angle) {
         mRotation = Quaternion.rotationOnAxis(axis, angle)
-                .multiply(mRotation)
-                .normalized();
+                .multiply(mRotation);
+
+        double length = mRotation.magnitude();
+        if (length != 0) {
+            mRotation = new Quaternion(
+                    mRotation.x() / length,
+                    mRotation.y() / length,
+                    mRotation.z() / length,
+                    mRotation.w() / length);
+        }
     }
 
     public void rotateAroundX(double angle) {
@@ -75,6 +86,14 @@ public class Transform3 {
         rotateAroundX(rotation.x());
         rotateAroundY(rotation.y());
         rotateAroundZ(rotation.z());
+    }
+
+    public Matrix getTransformation(){
+        Matrix translationMatrix = Matrices.translation3d(mPosition.x(), mPosition.y(), mPosition.z());
+        Matrix rotationMatrix = AdditionalMath.toRotationMatrix(mRotation);
+        Matrix scaleMatrix = Matrices.scaling3d(1, 1, 1);
+
+        return translationMatrix.multiply(rotationMatrix).multiply(scaleMatrix);
     }
 
     @Override

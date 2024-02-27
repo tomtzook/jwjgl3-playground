@@ -2,15 +2,16 @@ package com.github.tomtzook.engine;
 
 import com.github.tomtzook.kinematics.Kinematics3;
 import com.github.tomtzook.kinematics.Transform3;
+import com.github.tomtzook.rendering.Renderer;
 
 public interface Entity {
 
     Kinematics3 getKinematics();
+    Transform3 getTransform();
 
-     default Transform3 getTransform() {
-         return getKinematics().getTransform();
-     }
+     void onAdd();
+     void onRemove();
 
-    void update(EngineController controller, double deltaTime); // TODO: NEED TO PASS SOME CONTROL INTERFACES
-    void render(); // TODO: NEED TO PASS SHADER AND RENDERING INTERFACE
+    void update(EngineController controller, double deltaTime);
+    void render(Renderer renderer);
 }

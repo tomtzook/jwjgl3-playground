@@ -1,17 +1,17 @@
 package com.github.tomtzook;
 
+import com.castle.util.closeables.Closer;
 import com.github.tomtzook.engine.Engine;
 import com.github.tomtzook.engine.Input;
 import com.github.tomtzook.engine.Window;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 
-import static org.lwjgl.glfw.GLFW.glfwInit;
-import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         if (!glfwInit()) {
             throw new Error("failed to init opengl");
         }
@@ -24,12 +24,19 @@ public class Main {
             }
         });
 
-        Window window = Window.create(200, 200, "Test");
-        Input input = new Input(window);
-        Engine engine = new Engine(window, input);
+        try (Closer closer = Closer.empty()) {
+            Window window = Window.create(400, 400, "Test");
+            closer.add(window);
 
-        engine.addEntity(new TestEntity());
+            Input input = new Input(window);
+            Engine engine = new Engine(window, input);
 
-        engine.run();
+            engine.addEntity(new TestEntity());
+            engine.addEntity(new TestEntity2());
+
+            engine.run();
+        } finally {
+            glfwTerminate();
+        }
     }
 }

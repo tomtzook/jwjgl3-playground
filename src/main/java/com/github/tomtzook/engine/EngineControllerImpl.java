@@ -13,6 +13,14 @@ public class EngineControllerImpl implements EngineController {
     }
 
     public boolean isCloseRequested() {
+        if (Thread.interrupted()) {
+            mIsCloseRequested = true;
+            Thread.currentThread().interrupt();
+        }
+        if (mWindow.shouldClose()) {
+            mIsCloseRequested = true;
+        }
+
         return mIsCloseRequested;
     }
 
