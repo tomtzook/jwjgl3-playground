@@ -1,4 +1,4 @@
-package com.github.tomtzook.kinematics;
+package com.github.tomtzook.math;
 
 import com.jmath.vectors.Vector3;
 

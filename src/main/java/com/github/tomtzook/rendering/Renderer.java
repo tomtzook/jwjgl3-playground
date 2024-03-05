@@ -1,12 +1,12 @@
 package com.github.tomtzook.rendering;
 
 import com.github.tomtzook.engine.Camera;
-import com.github.tomtzook.kinematics.Transform3;
+import com.github.tomtzook.math.Transform3;
 import com.jmath.matrices.Matrix;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class Renderer {
+public class Renderer implements AutoCloseable {
 
     private final Camera mMainCamera;
     private final Shader mShader;
@@ -37,5 +37,10 @@ public class Renderer {
         mShader.setUniform("transformation", itemView);
 
         mesh.render();
+    }
+
+    @Override
+    public void close() throws Exception {
+        mShader.close();
     }
 }

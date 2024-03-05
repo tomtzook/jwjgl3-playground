@@ -1,6 +1,7 @@
 package com.github.tomtzook.engine;
 
 import com.castle.util.closeables.Closer;
+import com.github.tomtzook.math.Axes;
 import com.github.tomtzook.rendering.Renderer;
 import com.github.tomtzook.util.AdditionalMath;
 import com.jmath.matrices.Matrices;
@@ -33,7 +34,7 @@ public class Camera extends BaseEntity {
 
     public Matrix getView() {
         Vector3 position = getTransform().getPosition().multiply(-1);
-        Quaternion rotation = getTransform().getRotation();
+        Quaternion rotation = getTransform().getRotation().conjugate();
 
         // TODO: USE QUATERNION MATH
         Matrix translationMat = Matrices.translation3d(position.x(), position.y(), position.z());
@@ -46,6 +47,14 @@ public class Camera extends BaseEntity {
     public void update(EngineController controller, double deltaTime) {
         Input input = controller.getInput();
         double moveAmount = mMovementSpeed * deltaTime;
+
+        if (input.isKeyDown(GLFW_KEY_0)) {
+            System.out.println("camera");
+            System.out.println(getTransform().getPosition());
+            System.out.println(getTransform().getRotation());
+
+            System.out.println();
+        }
 
         if (input.isKeyDown(GLFW_KEY_UP)) {
             getTransform().moveForward(moveAmount);
@@ -71,11 +80,13 @@ public class Camera extends BaseEntity {
             Vector2 deltaPos = input.getMousePosition();
 
             if (deltaPos.x() != 0) {
-                getTransform().rotateAroundY(deltaPos.x() * mLookSensitivity);
+                getTransform().rotateAroundY(-deltaPos.x() * mLookSensitivity);
             }
 
             if (deltaPos.y() != 0) {
-                getTransform().rotateAroundX(deltaPos.y() * mLookSensitivity);
+                getTransform().rotate(
+                        getTransform().forward(),
+                        deltaPos.y() * mLookSensitivity);
             }
 
             input.setMousePosition(windowCenterPosition);

@@ -30,8 +30,8 @@ public class Main {
 
             Input input = new Input(window);
             Engine engine = new Engine(window, input);
+            closer.add(engine);
 
-            engine.addEntity(new TestEntity());
             engine.addEntity(new TestEntity2());
 
             engine.run();

@@ -1,12 +1,11 @@
 package com.github.tomtzook.engine;
 
-import com.github.tomtzook.kinematics.Kinematics3;
 import com.github.tomtzook.rendering.Renderer;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class World {
+public class World implements AutoCloseable {
 
     private final List<Entity> mEntities;
 
@@ -25,12 +24,17 @@ public class World {
         }
     }
 
+    public void removeAll() {
+        for (Entity entity : mEntities) {
+            entity.onRemove();
+        }
+
+        mEntities.clear();
+    }
+
     public void update(EngineController controller, double deltaTime) {
         for (Entity entity : mEntities) {
             entity.update(controller, deltaTime);
-
-            Kinematics3 kinematics = entity.getKinematics();
-            //kinematics.updateWithTime(deltaTime);
         }
     }
 
@@ -38,5 +42,10 @@ public class World {
         for (Entity entity : mEntities) {
             entity.render(renderer);
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        removeAll();
     }
 }

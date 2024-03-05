@@ -1,26 +1,20 @@
 package com.github.tomtzook.engine;
 
 import com.castle.util.closeables.Closer;
-import com.github.tomtzook.kinematics.Kinematics3;
-import com.github.tomtzook.kinematics.Transform3;
+import com.github.tomtzook.math.Transform3;
 
 public abstract class BaseEntity implements Entity {
 
-    private final Kinematics3 mKinematics;
+    private final Transform3 mTransform;
     private Closer mCurrentResourceHolder;
 
     public BaseEntity() {
-        mKinematics = new Kinematics3();
-    }
-
-    @Override
-    public final Kinematics3 getKinematics() {
-        return mKinematics;
+        mTransform = new Transform3();
     }
 
     @Override
     public final Transform3 getTransform() {
-        return mKinematics.getTransform();
+        return mTransform;
     }
 
     @Override

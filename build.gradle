@@ -13,6 +13,9 @@ repositories {
 
 dependencies {
     implementation group: 'com.github.tomtzook', name: 'jmath', version: '1.2.0'
+    implementation group: 'com.github.tomtzook', name: 'castle', version: '2.0.3'
+
+    implementation 'org.joml:joml:1.10.5'
 
     implementation group: 'org.lwjgl', name: 'lwjgl', version: LWJGL_VERSION
     implementation group: 'org.lwjgl', name: 'lwjgl-glfw', version: LWJGL_VERSION
@@ -33,5 +36,5 @@ jar {
 
 application {
     mainClassName = 'com.github.tomtzook.Main'
-    applicationName = ''
+    applicationName = 'Main'
 }

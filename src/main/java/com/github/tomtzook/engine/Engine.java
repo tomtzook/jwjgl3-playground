@@ -1,5 +1,6 @@
 package com.github.tomtzook.engine;
 
+import com.castle.util.closeables.Closer;
 import com.github.tomtzook.rendering.Renderer;
 import com.github.tomtzook.rendering.Shader;
 import com.github.tomtzook.util.AdditionalMath;
@@ -12,7 +13,7 @@ import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.glEnable;
 
-public class Engine {
+public class Engine implements AutoCloseable {
 
     private static final double FPS = 60.0;
 
@@ -43,7 +44,7 @@ public class Engine {
 
         Camera camera = new Camera(
                 projection,
-                0.5,
+                1,
                 0.5
         );
         Shader shader = new Shader("shader");
@@ -108,6 +109,15 @@ public class Engine {
                 Timer.delay(1);
             }
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        Closer closer = Closer.empty();
+        closer.add(mWorld);
+        closer.add(mRenderer);
+
+        closer.close();
     }
 
     private void update() {

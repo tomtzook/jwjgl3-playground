@@ -1,4 +1,4 @@
-package com.github.tomtzook.kinematics;
+package com.github.tomtzook.math;
 
 import com.jmath.vectors.Vector3;
 
@@ -11,8 +11,8 @@ public class Kinematics3 {
     private Vector3 mLinearAcceleration;
     private Vector3 mAngularAcceleration;
 
-    public Kinematics3() {
-        mTransform = new Transform3();
+    public Kinematics3(Transform3 transform) {
+        mTransform = transform;
 
         mLinearVelocity = new Vector3();
         mAngularVelocity = new Vector3();
