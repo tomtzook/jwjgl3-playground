@@ -7,6 +7,8 @@ import com.github.tomtzook.util.AdditionalMath;
 import com.github.tomtzook.util.Timer;
 import com.jmath.matrices.Matrix;
 import com.jmath.vectors.Vector2;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
@@ -15,13 +17,13 @@ import static org.lwjgl.opengl.GL11.glEnable;
 
 public class Engine implements AutoCloseable {
 
-    private static final double FPS = 60.0;
+    private static final float FPS = 60.0f;
 
     private final Window mWindow;
     private final World mWorld;
     private final EngineControllerImpl mController;
     private final Renderer mRenderer;
-    private final double mFrameTime;
+    private final float mFrameTime;
     private boolean mShouldRun;
 
     public Engine(Window window, Input input) {
@@ -34,24 +36,19 @@ public class Engine implements AutoCloseable {
         mWorld = new World();
         mController = new EngineControllerImpl(window, input);
 
-        Vector2 windowSize = mWindow.getSize();
-        Matrix projection = AdditionalMath.perspectiveMatrix3d(
-                60,
-                windowSize.x() / windowSize.y(),
-                0.01f,
-                1000.0f
-        );
-
         Camera camera = new Camera(
-                projection,
-                1,
-                0.5
+                30,
+                mWindow.getSize(),
+                0.01f,
+                100.0f,
+                1f,
+                0.5f
         );
         Shader shader = new Shader("shader");
         mRenderer = new Renderer(camera, shader);
         addEntity(camera);
 
-        mFrameTime = 1.0 / FPS;
+        mFrameTime = 1.0f / FPS;
         mShouldRun = true;
     }
 

@@ -1,6 +1,7 @@
 package com.github.tomtzook.engine;
 
 import com.jmath.vectors.Vector2;
+import org.joml.Vector2f;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -26,18 +27,18 @@ public class Input {
         return glfwGetMouseButton(mWindow.mWindow, button) == GLFW_PRESS;
     }
 
-    public Vector2 getMousePosition() {
+    public Vector2f getMousePosition() {
         glfwGetCursorPos(mWindow.mWindow, mMouseGetX, mMouseGetY);
 
-        Vector2 windowCenter = mWindow.getCenter();
+        Vector2f windowCenter = mWindow.getCenter();
 
-        double x = mMouseGetX[0] - windowCenter.x();
-        double y = -(mMouseGetY[0] - windowCenter.y());
+        float x = (float) (mMouseGetX[0] - windowCenter.x());
+        float y = (float) -(mMouseGetY[0] - windowCenter.y());
 
-        return new Vector2(x, y);
+        return new Vector2f(x, y);
     }
 
-    public void setMousePosition(Vector2 position) {
+    public void setMousePosition(Vector2f position) {
         glfwSetCursorPos(mWindow.mWindow, position.x(), position.y());
     }
 }

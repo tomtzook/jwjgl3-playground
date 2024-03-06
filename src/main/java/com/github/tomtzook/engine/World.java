@@ -32,7 +32,7 @@ public class World implements AutoCloseable {
         mEntities.clear();
     }
 
-    public void update(EngineController controller, double deltaTime) {
+    public void update(EngineController controller, float deltaTime) {
         for (Entity entity : mEntities) {
             entity.update(controller, deltaTime);
         }

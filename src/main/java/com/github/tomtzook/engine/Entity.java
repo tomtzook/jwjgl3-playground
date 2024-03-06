@@ -10,6 +10,6 @@ public interface Entity {
      void onAdd();
      void onRemove();
 
-    void update(EngineController controller, double deltaTime);
+    void update(EngineController controller, float deltaTime);
     void render(Renderer renderer);
 }

@@ -1,6 +1,7 @@
 package com.github.tomtzook.engine;
 
 import com.jmath.vectors.Vector2;
+import org.joml.Vector2f;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -39,14 +40,14 @@ public class Window implements AutoCloseable {
         glfwSwapBuffers(mWindow);
     }
 
-    public Vector2 getCenter() {
-        Vector2 size = getSize();
-        return size.multiply(0.5);
+    public Vector2f getCenter() {
+        Vector2f size = getSize();
+        return size.mul(0.5f);
     }
 
-    public Vector2 getSize() {
+    public Vector2f getSize() {
         glfwGetWindowSize(mWindow, mWindowGetWidth, mWindowGetHeight);
-        return new Vector2(mWindowGetWidth[0], mWindowGetHeight[0]);
+        return new Vector2f(mWindowGetWidth[0], mWindowGetHeight[0]);
     }
 
     @Override

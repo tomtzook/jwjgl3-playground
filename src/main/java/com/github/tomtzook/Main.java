@@ -25,7 +25,7 @@ public class Main {
         });
 
         try (Closer closer = Closer.empty()) {
-            Window window = Window.create(400, 400, "Test");
+            Window window = Window.create(500, 500, "Test");
             closer.add(window);
 
             Input input = new Input(window);

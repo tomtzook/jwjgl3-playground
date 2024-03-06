@@ -1,26 +1,24 @@
 package com.github.tomtzook.engine;
 
 import com.castle.util.closeables.Closer;
-import com.github.tomtzook.math.Axes;
 import com.github.tomtzook.rendering.Renderer;
-import com.github.tomtzook.util.AdditionalMath;
-import com.jmath.matrices.Matrices;
-import com.jmath.matrices.Matrix;
-import com.jmath.quaternion.Quaternion;
-import com.jmath.vectors.Vector2;
-import com.jmath.vectors.Vector3;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Quaternionf;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Camera extends BaseEntity {
 
-    private final Matrix mProjection;
-    private final double mMovementSpeed;
-    private final double mLookSensitivity;
+    private final Matrix4f mProjection;
+    private final float mMovementSpeed;
+    private final float mLookSensitivity;
 
     private boolean mIsMoseLocked;
 
-    public Camera(Matrix projection, double movementSpeed, double lookSensitivity) {
+    public Camera(Matrix4f projection, float movementSpeed, float lookSensitivity) {
         mProjection = projection;
         mMovementSpeed = movementSpeed;
         mLookSensitivity = lookSensitivity;
@@ -28,45 +26,59 @@ public class Camera extends BaseEntity {
         mIsMoseLocked = false;
     }
 
-    public Matrix getProjection() {
+    public Camera(
+            float fov, float aspectRatio, float zNear, float zFar,
+            float movementSpeed, float lookSensitivity) {
+        this(new Matrix4f().perspective(fov, aspectRatio, zNear, zFar), movementSpeed, lookSensitivity);
+    }
+
+    public Camera(
+            float fov, Vector2f windowSize, float zNear, float zFar,
+            float movementSpeed, float lookSensitivity) {
+        this(fov, windowSize.x / windowSize.y, zNear, zFar, movementSpeed, lookSensitivity);
+    }
+
+    public Matrix4fc getProjection() {
         return mProjection;
     }
 
-    public Matrix getView() {
-        Vector3 position = getTransform().getPosition().multiply(-1);
-        Quaternion rotation = getTransform().getRotation().conjugate();
+    public void getView(Matrix4f out) {
+        Vector3f position = getTransform().getPosition();
+        Quaternionf rotation = getTransform().getRotation();
 
-        // TODO: USE QUATERNION MATH
-        Matrix translationMat = Matrices.translation3d(position.x(), position.y(), position.z());
-        Matrix rotationMat = AdditionalMath.toRotationMatrix(rotation);
+        out.identity()
+                .rotate(rotation)
+                .translate(position.negate());
+    }
 
-        return rotationMat.multiply(translationMat);
+    public Vector3f getForward() {
+        return new Vector3f(0, 0, -1).rotate(new Quaternionf(getTransform().getRotation()).conjugate());
+    }
+
+    public Vector3f getLeft() {
+        return new Vector3f(-1, 0, 0).rotate(new Quaternionf(getTransform().getRotation()).conjugate());
+    }
+
+    public Vector3f getUp() {
+        return new Vector3f(0, 1, 0).rotate(new Quaternionf(getTransform().getRotation()).conjugate());
     }
 
     @Override
-    public void update(EngineController controller, double deltaTime) {
+    public void update(EngineController controller, float deltaTime) {
         Input input = controller.getInput();
-        double moveAmount = mMovementSpeed * deltaTime;
-
-        if (input.isKeyDown(GLFW_KEY_0)) {
-            System.out.println("camera");
-            System.out.println(getTransform().getPosition());
-            System.out.println(getTransform().getRotation());
-
-            System.out.println();
-        }
+        float moveAmount = mMovementSpeed * deltaTime;
 
         if (input.isKeyDown(GLFW_KEY_UP)) {
-            getTransform().moveForward(moveAmount);
+            getTransform().move(getForward(), moveAmount);
         }
         if (input.isKeyDown(GLFW_KEY_DOWN)) {
-            getTransform().moveBackward(moveAmount);
+            getTransform().move(getForward(), -moveAmount);
         }
         if (input.isKeyDown(GLFW_KEY_RIGHT)) {
-            getTransform().moveRight(moveAmount);
+            getTransform().move(getLeft(), moveAmount);
         }
         if (input.isKeyDown(GLFW_KEY_LEFT)) {
-            getTransform().moveLeft(moveAmount);
+            getTransform().move(getLeft(), -moveAmount);
         }
 
         if (!mIsMoseLocked && input.isMouseButtonDown(GLFW_MOUSE_BUTTON_1)) {
@@ -76,17 +88,21 @@ public class Camera extends BaseEntity {
         }
 
         if (mIsMoseLocked) {
-            Vector2 windowCenterPosition = controller.getWindow().getCenter();
-            Vector2 deltaPos = input.getMousePosition();
+            Vector2f windowCenterPosition = controller.getWindow().getCenter();
+            Vector2f deltaPos = input.getMousePosition();
 
+            // left-right
             if (deltaPos.x() != 0) {
-                getTransform().rotateAroundY(-deltaPos.x() * mLookSensitivity);
+                getTransform().rotate(
+                        getUp(),
+                        -deltaPos.x() * mLookSensitivity);
             }
 
+            // up-down
             if (deltaPos.y() != 0) {
                 getTransform().rotate(
-                        getTransform().forward(),
-                        deltaPos.y() * mLookSensitivity);
+                        getLeft(),
+                        -deltaPos.y() * mLookSensitivity);
             }
 
             input.setMousePosition(windowCenterPosition);

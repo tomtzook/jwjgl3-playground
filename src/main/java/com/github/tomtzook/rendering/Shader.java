@@ -1,14 +1,14 @@
 package com.github.tomtzook.rendering;
 
-import static org.lwjgl.opengl.GL20.*;
-
 import com.github.tomtzook.util.Buffers;
 import com.github.tomtzook.util.Resources;
 import com.jmath.matrices.Matrix;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
+
+import static org.lwjgl.opengl.GL20.*;
 
 public class Shader implements AutoCloseable {
 
@@ -78,6 +78,19 @@ public class Shader implements AutoCloseable {
         // todo: better memory management
         FloatBuffer buffer = Buffers.fromMat(matrix);
         glUniformMatrix4fv(location, false, buffer);
+    }
+
+    public void setUniform(String name, Matrix4fc matrix) {
+        int location = glGetUniformLocation(mProgramObject, name);
+        if (location == -1) {
+            return;
+        }
+
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer fb = stack.mallocFloat(16);
+            matrix.get(fb);
+            glUniformMatrix4fv(location, false, fb);
+        }
     }
 
     public void bind() {
