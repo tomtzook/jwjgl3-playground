@@ -2,14 +2,15 @@ package com.github.tomtzook.rendering;
 
 import com.github.tomtzook.engine.Camera;
 import com.github.tomtzook.math.Transform3;
-import com.jmath.matrices.Matrix;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
+import org.joml.Vector2fc;
 
 import static org.lwjgl.opengl.GL11.*;
 
 public class Renderer implements AutoCloseable {
 
+    private final Vector2fc mWindowSize;
     private final Camera mMainCamera;
     private final Shader mShader;
     
@@ -17,7 +18,8 @@ public class Renderer implements AutoCloseable {
     private final Matrix4f mObjectView;
     private final Matrix4f mObjectViewTransformFull;
 
-    public Renderer(Camera mainCamera, Shader shader) {
+    public Renderer(Vector2fc windowSize, Camera mainCamera, Shader shader) {
+        mWindowSize = windowSize;
         mMainCamera = mainCamera;
         mShader = shader;
         
@@ -28,6 +30,7 @@ public class Renderer implements AutoCloseable {
 
     public void startRender() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, 0, (int) mWindowSize.x(), (int) mWindowSize.y());
 
         mShader.bind();
 
@@ -51,6 +54,7 @@ public class Renderer implements AutoCloseable {
 
         mShader.setUniform("transformation", mObjectViewTransformFull);
 
+        mesh.updateShader(mShader);
         mesh.render();
     }
 

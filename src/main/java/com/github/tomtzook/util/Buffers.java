@@ -33,7 +33,7 @@ public class Buffers {
         int height = image.getHeight();
 
         int[] raw = image.getRGB(0, 0, width, height, null, 0, width);
-        ByteBuffer buffer = BufferUtils.createByteBuffer(raw.length);
+        ByteBuffer buffer = BufferUtils.createByteBuffer(raw.length * 4);
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {

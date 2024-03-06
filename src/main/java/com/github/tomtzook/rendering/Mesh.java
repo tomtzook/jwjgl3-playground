@@ -3,6 +3,8 @@ package com.github.tomtzook.rendering;
 import com.github.tomtzook.util.AdditionalMath;
 import com.github.tomtzook.util.Buffers;
 import com.jmath.vectors.Vector3;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -14,19 +16,27 @@ public class Mesh implements AutoCloseable {
 
     private final int mDrawCount;
     private final int mVertexObject;
-    private final int mColorsObject;
+    private final int mTextCoordsObject;
+    private final int mNormalsObject;
     private final int mIndexObject;
 
-    public Mesh(FloatBuffer positions, FloatBuffer colors, IntBuffer indices) {
+    private Texture mTexture;
+    private Vector3fc mColor;
+
+    public Mesh(FloatBuffer positions, FloatBuffer textCoords, FloatBuffer normals, IntBuffer indices) {
         mDrawCount = indices.limit();
 
         mVertexObject = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, mVertexObject);
         glBufferData(GL_ARRAY_BUFFER, positions, GL_STATIC_DRAW);
 
-        mColorsObject = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, mColorsObject);
-        glBufferData(GL_ARRAY_BUFFER, colors, GL_STATIC_DRAW);
+        mTextCoordsObject = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, mTextCoordsObject);
+        glBufferData(GL_ARRAY_BUFFER, textCoords, GL_STATIC_DRAW);
+
+        mNormalsObject = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, mNormalsObject);
+        glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
 
         mIndexObject = glGenBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexObject);
@@ -34,54 +44,48 @@ public class Mesh implements AutoCloseable {
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        mColor = new Vector3f();
     }
 
-    public Mesh(float[] positions, float[] colors, int[] indices) {
-        this(Buffers.fromArray(positions), Buffers.fromArray(colors), Buffers.fromArray(indices));
+    public Mesh(float[] positions, float[] textCoords, float[] normals, int[] indices) {
+        this(Buffers.fromArray(positions), Buffers.fromArray(textCoords), Buffers.fromArray(normals), Buffers.fromArray(indices));
     }
 
-    public static Mesh cuboid(double width, double height, double length) {
-        Vector3[] vertices = AdditionalMath.cuboidVertices(width, height, length);
-        FloatBuffer verticesBuffer = AdditionalMath.verticesToBuffer(vertices);
+    public void setTexture(Texture texture) {
+        mTexture = texture;
+    }
 
-        float[] colors = {
-                0.5f, 0.0f, 0.0f,
-                0.0f, 0.5f, 0.0f,
-                0.0f, 0.0f, 0.5f,
-                0.0f, 0.5f, 0.5f,
-                0.5f, 0.0f, 0.0f,
-                0.0f, 0.5f, 0.0f,
-                0.0f, 0.0f, 0.5f,
-                0.0f, 0.5f, 0.5f,
-        };
+    public void setColor(Vector3fc color) {
+        mColor = new Vector3f(color);
+    }
 
-        int[] indices = {
-            // Front face
-            0, 1, 3, 3, 1, 2,
-            // Top Face
-            4, 0, 3, 5, 4, 3,
-            // Right face
-            3, 2, 7, 5, 3, 7,
-            // Left face
-            6, 1, 0, 6, 0, 4,
-            // Bottom face
-            2, 1, 6, 2, 6, 7,
-            // Back face
-            7, 6, 4, 7, 4, 5
-        };
+    void updateShader(Shader shader) {
+        shader.setUniform("color", mColor);
+        shader.setUniform("useColor", mTexture == null ? 1 : 0);
 
-        return new Mesh(verticesBuffer, Buffers.fromArray(colors), Buffers.fromArray(indices));
+        if (mTexture != null) {
+            shader.setUniform("textureSampler", 0);
+        }
     }
 
     void render() {
+        if (mTexture != null) {
+            mTexture.bind(0);
+        }
+
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
 
         glBindBuffer(GL_ARRAY_BUFFER, mVertexObject);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 
-        glBindBuffer(GL_ARRAY_BUFFER, mColorsObject);
+        glBindBuffer(GL_ARRAY_BUFFER, mTextCoordsObject);
         glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, mNormalsObject);
+        glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexObject);
         glDrawElements(GL_TRIANGLES, mDrawCount, GL_UNSIGNED_INT, 0);
@@ -91,12 +95,22 @@ public class Mesh implements AutoCloseable {
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
+
+        if (mTexture != null) {
+            mTexture.unbind();
+        }
     }
 
     @Override
     public void close() throws Exception {
         glDeleteBuffers(mVertexObject);
-        glDeleteBuffers(mColorsObject);
+        glDeleteBuffers(mTextCoordsObject);
+        glDeleteBuffers(mNormalsObject);
         glDeleteBuffers(mIndexObject);
+
+        if (mTexture != null) {
+            mTexture.close();
+        }
     }
 }

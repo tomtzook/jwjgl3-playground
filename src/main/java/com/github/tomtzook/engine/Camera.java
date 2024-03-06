@@ -81,12 +81,6 @@ public class Camera extends BaseEntity {
             getTransform().move(getLeft(), -moveAmount);
         }
 
-        if (!mIsMoseLocked && input.isMouseButtonDown(GLFW_MOUSE_BUTTON_1)) {
-            mIsMoseLocked = true;
-        } else if (mIsMoseLocked && input.isKeyDown(GLFW_KEY_ESCAPE)) {
-            mIsMoseLocked = false;
-        }
-
         if (mIsMoseLocked) {
             Vector2f windowCenterPosition = controller.getWindow().getCenter();
             Vector2f deltaPos = input.getMousePosition();
@@ -106,6 +100,13 @@ public class Camera extends BaseEntity {
             }
 
             input.setMousePosition(windowCenterPosition);
+        }
+
+        // mouse lock should be done last as to not take effect until next run
+        if (!mIsMoseLocked && input.isMouseButtonDown(GLFW_MOUSE_BUTTON_1)) {
+            mIsMoseLocked = true;
+        } else if (mIsMoseLocked && input.isKeyDown(GLFW_KEY_ESCAPE)) {
+            mIsMoseLocked = false;
         }
     }
 

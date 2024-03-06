@@ -3,12 +3,7 @@ package com.github.tomtzook.engine;
 import com.castle.util.closeables.Closer;
 import com.github.tomtzook.rendering.Renderer;
 import com.github.tomtzook.rendering.Shader;
-import com.github.tomtzook.util.AdditionalMath;
 import com.github.tomtzook.util.Timer;
-import com.jmath.matrices.Matrix;
-import com.jmath.vectors.Vector2;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
@@ -45,7 +40,7 @@ public class Engine implements AutoCloseable {
                 0.5f
         );
         Shader shader = new Shader("shader");
-        mRenderer = new Renderer(camera, shader);
+        mRenderer = new Renderer(window.getSize(), camera, shader);
         addEntity(camera);
 
         mFrameTime = 1.0f / FPS;

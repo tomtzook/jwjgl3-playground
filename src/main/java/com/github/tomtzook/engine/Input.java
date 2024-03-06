@@ -1,6 +1,5 @@
 package com.github.tomtzook.engine;
 
-import com.jmath.vectors.Vector2;
 import org.joml.Vector2f;
 
 import static org.lwjgl.glfw.GLFW.*;
