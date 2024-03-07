@@ -1,7 +1,7 @@
 package com.github.tomtzook.engine;
 
 import com.castle.util.closeables.Closer;
-import com.github.tomtzook.rendering.Renderer;
+import com.github.tomtzook.rendering.ElementRenderer3;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Quaternionf;
@@ -111,7 +111,7 @@ public class Camera extends BaseEntity {
     }
 
     @Override
-    public void render(Renderer renderer) {
+    public void render(ElementRenderer3 renderer) {
 
     }
 

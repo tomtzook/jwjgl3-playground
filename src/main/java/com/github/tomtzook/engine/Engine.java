@@ -1,14 +1,16 @@
 package com.github.tomtzook.engine;
 
 import com.castle.util.closeables.Closer;
+import com.github.tomtzook.rendering.ElementRenderer2;
+import com.github.tomtzook.rendering.ElementRenderer3;
 import com.github.tomtzook.rendering.Renderer;
 import com.github.tomtzook.rendering.Shader;
 import com.github.tomtzook.util.Timer;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 
 public class Engine implements AutoCloseable {
 
@@ -16,6 +18,7 @@ public class Engine implements AutoCloseable {
 
     private final Window mWindow;
     private final World mWorld;
+    private final Hud mHud;
     private final EngineControllerImpl mController;
     private final Renderer mRenderer;
     private final float mFrameTime;
@@ -26,9 +29,13 @@ public class Engine implements AutoCloseable {
 
         mWindow.show();
         GL.createCapabilities();
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
 
         mWorld = new World();
+        mHud = new Hud();
         mController = new EngineControllerImpl(window, input);
 
         Camera camera = new Camera(
@@ -40,7 +47,8 @@ public class Engine implements AutoCloseable {
                 0.5f
         );
         Shader shader = new Shader("shader");
-        mRenderer = new Renderer(window.getSize(), camera, shader);
+        Shader hudShader = new Shader("hud");
+        mRenderer = new Renderer(window.getSize(), camera, shader, hudShader);
         addEntity(camera);
 
         mFrameTime = 1.0f / FPS;
@@ -49,6 +57,10 @@ public class Engine implements AutoCloseable {
 
     public void addEntity(Entity entity) {
         mWorld.addEntity(entity);
+    }
+
+    public void addHudElement(HudElement element) {
+        mHud.addElement(element);
     }
 
     public void run() {
@@ -86,12 +98,7 @@ public class Engine implements AutoCloseable {
             }
 
             if (render) {
-                mRenderer.startRender();
-                try {
-                    mWorld.render(mRenderer);
-                } finally {
-                    mRenderer.endRender();
-                }
+                render();
 
                 frames++;
 
@@ -116,5 +123,25 @@ public class Engine implements AutoCloseable {
         glfwPollEvents();
 
         mWorld.update(mController, mFrameTime);
+        mHud.update(mController, mFrameTime);
+    }
+
+    private void render() {
+        mRenderer.startRendering();
+
+
+        ElementRenderer3 entityRenderer = mRenderer.startObjectRendering();
+        try {
+            mWorld.render(entityRenderer);
+        } finally {
+            entityRenderer.finish();
+        }
+
+        ElementRenderer2 hudRenderer = mRenderer.startHudRendering();
+        try {
+            mHud.render(hudRenderer);
+        } finally {
+            hudRenderer.finish();
+        }
     }
 }

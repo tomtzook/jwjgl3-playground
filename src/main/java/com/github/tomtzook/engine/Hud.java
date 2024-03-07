@@ -1,24 +1,24 @@
 package com.github.tomtzook.engine;
 
-import com.github.tomtzook.rendering.ElementRenderer3;
+import com.github.tomtzook.rendering.ElementRenderer2;
 
-public class World implements AutoCloseable {
+public class Hud implements AutoCloseable {
 
-    private final ElementContainer<Entity> mContainer;
+    private final ElementContainer<HudElement> mContainer;
 
-    public World() {
+    public Hud() {
         mContainer = new ElementContainer<>();
     }
 
-    public void addEntity(Entity entity) {
-        mContainer.addElement(entity);
+    public void addElement(HudElement element) {
+        mContainer.addElement(element);
     }
 
     public void update(EngineController controller, float deltaTime) {
         mContainer.forEach((e)-> e.update(controller, deltaTime));
     }
 
-    public void render(ElementRenderer3 renderer) {
+    public void render(ElementRenderer2 renderer) {
         mContainer.forEach((e)-> e.render(renderer));
     }
 

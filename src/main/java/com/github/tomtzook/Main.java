@@ -4,6 +4,8 @@ import com.castle.util.closeables.Closer;
 import com.github.tomtzook.engine.Engine;
 import com.github.tomtzook.engine.Input;
 import com.github.tomtzook.engine.Window;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 
@@ -32,7 +34,16 @@ public class Main {
             Engine engine = new Engine(window, input);
             closer.add(engine);
 
-            engine.addEntity(new TestEntity2());
+            TestEntity2 entity1 = new TestEntity2();
+            entity1.getTransform().setPosition(new Vector3f(0, 0, -2));
+            engine.addEntity(entity1);
+
+            TestEntity2 entity2 = new TestEntity2();
+            entity2.getTransform().setPosition(new Vector3f(4, 0, -1));
+            engine.addEntity(entity2);
+
+            TestHudElement1 testHudElement1 = new TestHudElement1();
+            engine.addHudElement(testHudElement1);
 
             engine.run();
         } finally {

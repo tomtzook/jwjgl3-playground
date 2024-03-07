@@ -14,9 +14,13 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 public class Texture implements AutoCloseable {
 
     private final int mTextureObject;
+    private final float mWidth;
+    private final float mHeight;
 
     public Texture(ByteBuffer buffer, int width, int height) {
         mTextureObject = glGenTextures();
+        mWidth = width;
+        mHeight = height;
 
         glBindTexture(GL_TEXTURE_2D, mTextureObject);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -45,6 +49,14 @@ public class Texture implements AutoCloseable {
 
     public void unbind() {
         glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    public float getWidth() {
+        return mWidth;
+    }
+
+    public float getHeight() {
+        return mHeight;
     }
 
     @Override
